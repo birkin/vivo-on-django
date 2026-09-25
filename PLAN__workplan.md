@@ -52,13 +52,18 @@ Codex carries out the investigation, tooling, implementation, and checks below w
 2. Browse a limited selection of current public pages. Follow navigation, search forms, filters, tabs, and download links; record the additional requests made by those interactions.
 3. For each candidate, record its path pattern, method, query parameters, response type, redirect behavior, supporting services, evidence source and date, and status: confirmed, uncertain, or excluded. Identify whether Django serves it, preserves a redirect, or links to a separate service.
 4. Resolve important uncertainties using current behavior and code. Ask the owner only where evidence cannot establish the intended scope. Do not expand scope merely because an old route or test exists.
-5. Define an initial set of 12–24 representative cases. Give each a stable ID, starting path, interaction steps, expected observations, and required data. Expand coverage when a confirmed behavior needs another case; the initial count is a starting point, not a completion limit.
+5. Select several real examples for endpoint families whose content changes which sections or interactions appear. For faculty profiles, start with approximately six pages: two from the natural sciences, two from the social sciences, and two from the humanities. Use that spread to find varied content; verify the actual features on each page before deciding the sample is sufficient.
+6. Define an initial set of 12–24 representative cases across the site, including these examples. Give each a stable ID, starting path, interaction steps, expected observations, and required data. Several cases may exercise the same endpoint. Expand coverage when a confirmed behavior needs another case; the initial count is a starting point, not a completion limit.
 
 Candidate families include home and informational pages; `/search`, `/search/advanced`, and `/search_facets`; `/display/{id}` and linked publication or visualization responses; `/individual/{id}` and confirmed export forms; and linked documents, profile images, book covers, or legacy redirects. Browser-entry or challenge responses need classification if encountered. These are candidates, not a declaration that all are required.
 
-**Deliverables:** a concise endpoint inventory in `docs/` and a machine-readable case manifest with paths relative to the configured site. Store private identifiers and service addresses in separate local configuration. Every confirmed family must map to a case or an explicit remaining task.
+For each endpoint family with optional content, build a table linking observed features to case IDs. Record which examples show each section or control, which omit it, the data condition that appears to govern it, and the source and date of the evidence. Distinguish an observed absence from a feature that has not yet been checked. Section names suggested during planning are hypothetical until confirmed on the public site.
 
-**Ready to proceed when:** the first cases have evidence of current use, cover the main public journeys, and identify which upstream responses and assets are needed to reproduce them.
+Include cases with optional sections present and absent, short and long content, and relevant combinations of features that affect layout or interaction. Inspect Rails conditions to guide the search for missing examples, then verify those examples in the running site. Add pages when the initial sample misses a confirmed feature; apply the same approach to organizations and other pages whose presentation depends on their data.
+
+**Deliverables:** a concise endpoint inventory and feature-to-case table in `docs/`, plus a machine-readable case manifest with paths relative to the configured site. Store private identifiers and service addresses in separate local configuration. Every confirmed family and observed feature must map to a case or an explicit remaining task.
+
+**Ready to proceed when:** the first cases have evidence of current use, cover the main public journeys and their observed content variations, and identify which upstream responses and assets are needed to reproduce them. Record gaps explicitly; checking one page does not establish coverage of its whole endpoint family.
 
 ### 2. Establish repeatable data and a runnable local site
 
@@ -116,7 +121,7 @@ The first case set should cover these behaviors where confirmed:
 
 - A normal search, a search with no results, and an empty or browse search.
 - Filter application and removal, combined filters, pagination, sorting, advanced search, and any separate facet request used by the page.
-- A profile with substantial content and another with optional sections absent; an organization and any other actively displayed record types.
+- The selected real profiles and other record examples from the feature-to-case table, preserving the data that makes each optional section appear or remain absent. Capture the related records and assets needed for each example.
 - Navigation from results to a profile and back, including preserved query state.
 - Confirmed downloads, alternate response formats, legacy redirects, missing records, and visualization data.
 - Homepage data, images, fonts, and other assets needed to render the selected cases without external requests.
@@ -137,7 +142,7 @@ The following interface is a proposal; the script and options do not exist yet. 
 | `compare-local` | Starts or connects to local Django using the selected fixture set; compares it with a saved reference baseline. Permits local services and recorded assets only. | Writes local reports, screenshots, image differences, and debugging evidence. This is the default development check. |
 | `compare-live` | Runs the same selected journeys against both configured sites. Identifies whether each comparison has aligned data or possible data drift. | Writes a separate report and captures. Does not automatically update the saved baseline or accept differences. |
 
-The manifest should include case ID, endpoint family, relative path and query, actions, expected final path, assertions, data-fixture reference, viewport, and any narrowly defined normalization. Site origins may differ; internal path, query, and fragment behavior must still match. Compare important external link destinations using local expectations.
+The manifest should include case ID, endpoint family, relative path and query, actions, expected final path, assertions, data-fixture reference, viewport, and any narrowly defined normalization. For each example, identify the features it covers and assert which sections and controls should appear or remain absent, along with their content and interactions. Site origins may differ; internal path, query, and fragment behavior must still match. Compare important external link destinations using local expectations.
 
 For each case, return:
 
@@ -177,6 +182,7 @@ Keep completed entries brief: date, outcome, checks performed, and any remaining
 ## Completion checks
 
 - [ ] Every confirmed public endpoint family and user journey has a case, and uncertain candidates have been resolved or explicitly deferred by the owner.
+- [ ] Every confirmed feature that depends on record content has representative cases, including presence and absence where meaningful. The feature-to-case table records evidence and remaining gaps; a single passing profile cannot establish completion for all profiles.
 - [ ] The initial 12–24 cases, plus cases needed for remaining confirmed behavior, run repeatably with documented data and baseline versions.
 - [ ] A clean local setup can run the application and comparisons without production access when fixtures are selected. Missing fixtures or assets produce failures.
 - [ ] Required URLs, redirects, parameters, response formats, search results, filters, tabs, links, downloads, and visualizations match the reference evidence.
@@ -204,7 +210,8 @@ No intentional user-visible differences have been accepted in this initial draft
 ## Next steps
 
 - [ ] **Codex: build the candidate endpoint inventory.** Reconcile historical evidence with current Rails links and routes, then verify the primary journeys in the public site.
-- [ ] **Codex: define the first 12–24 cases.** Connect each to evidence, expected behavior, upstream requests, and required assets. Record unanswered scope questions separately.
+- [ ] **Codex: select varied real examples within endpoint families.** Start with approximately six faculty profiles across the natural sciences, social sciences, and humanities. Record observed features and gaps in the feature-to-case table, then add examples where needed.
+- [ ] **Codex: define the first 12–24 cases.** Include the selected examples and their expected sections and interactions. Connect each to evidence, upstream requests, and required assets. Record unanswered scope questions separately.
 - [ ] **Codex: establish data availability.** Identify a permitted source of authentic responses, demonstrate replay for a search and profile, and record whether Docker Solr is needed next.
 - [ ] **Codex: prepare and check the local runtime.** Verify startup and the existing test suite before implementing new behavior.
 - [ ] **Codex: build the first browser comparison.** Capture a dated reference, compare the selected local pages, and prove that the report detects meaningful differences.
@@ -212,4 +219,5 @@ No intentional user-visible differences have been accepted in this initial draft
 
 ## Completed
 
+- **2026-09-25 — Added coverage of variations within an endpoint.** Following the [review comment](https://github.com/birkin/vivo-on-django/issues/1#issuecomment-5835976507), Codex added real-page sampling, a feature-to-case table, and corresponding fixture, browser-assertion, and completion requirements. Checked document links, anchors, and formatting. Selecting pages and verifying their features remain future work; no application code changed.
 - **2026-09-25 — Initial workplan drafted.** Codex reviewed the repository guidance, goal, prototype routes and helpers, Rails search and display code, and historical URL summaries. The plan now sets out endpoint discovery, repeatable data, browser comparisons, implementation, and acceptance, using the owner's no-noticeable-difference goal. Production behavior, service access, and application tests have not been verified in this planning task; implementation remains future work.
