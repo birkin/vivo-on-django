@@ -1,0 +1,398 @@
+{% extends 'vivo/people/base_people.html' %}
+
+{% block people_breadcrumb %}
+    <li class="breadcrumb-item active" aria-current="page">{{ person.name }}</li>
+{% endblock %}
+
+{% block people_title %}{{ person.name }}{% endblock %}
+
+{% block people_subtitle %}
+    {% if person.title %}{{ person.title }}{% endif %}
+{% endblock %}
+
+{% block people_actions %}
+<div class="btn-group" role="group">
+    {% if user.is_authenticated and user == person.user %}
+    <a href="{% url 'people:edit' person.id %}" class="btn btn-outline-primary">
+        <i class="fas fa-edit"></i> Edit Profile
+    </a>
+    {% endif %}
+    
+    <div class="btn-group" role="group">
+        <button type="button" class="btn btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown">
+            <i class="fas fa-download"></i> Export
+        </button>
+        <ul class="dropdown-menu dropdown-menu-end">
+            <li><a class="dropdown-item" href="#"><i class="fas fa-address-card"></i> vCard</a></li>
+            <li><a class="dropdown-item" href="#"><i class="fas fa-file-alt"></i> BibTeX</a></li>
+            <li><a class="dropdown-item" href="#"><i class="fas fa-code"></i> JSON</a></li>
+        </ul>
+    </div>
+</div>
+{% endblock %}
+
+{% block people_content %}
+<div class="row">
+    <!-- Left Column -->
+    <div class="col-lg-4 mb-4">
+        <div class="card mb-4">
+            <div class="card-body text-center">
+                <img src="{% if person.image %}{{ person.image.url }}{% else %}{% static 'img/default-avatar.png' %}{% endif %}" 
+                     alt="{{ person.name }}" 
+                     class="img-fluid rounded-circle mb-3" 
+                     style="width: 200px; height: 200px; object-fit: cover;">
+                
+                <h3 class="h4">{{ person.name }}</h3>
+                
+                {% if person.title %}
+                <p class="text-muted">{{ person.title }}</p>
+                {% endif %}
+                
+                {% if person.departments.exists %}
+                <p class="mb-2">
+                    {% for dept in person.departments.all %}
+                        <a href="#" class="text-decoration-none">
+                            <i class="fas fa-building me-1"></i> {{ dept.name }}
+                        </a>{% if not forloop.last %}<br>{% endif %}
+                    {% endfor %}
+                </p>
+                {% endif %}
+                
+                <div class="d-flex justify-content-center gap-2 mb-3">
+                    {% if person.orcid_id %}
+                    <a href="https://orcid.org/{{ person.orcid_id }}" target="_blank" 
+                       class="btn btn-outline-dark btn-sm" title="ORCID Profile">
+                        <i class="fab fa-orcid"></i> ORCID
+                    </a>
+                    {% endif %}
+                    
+                    {% if person.google_scholar_id %}
+                    <a href="https://scholar.google.com/citations?user={{ person.google_scholar_id }}" 
+                       target="_blank" class="btn btn-outline-dark btn-sm" title="Google Scholar">
+                        <i class="fas fa-graduation-cap"></i> Scholar
+                    </a>
+                    {% endif %}
+                </div>
+                
+                <div class="d-grid gap-2">
+                    {% if person.email %}
+                    <a href="mailto:{{ person.email }}" class="btn btn-outline-primary">
+                        <i class="fas fa-envelope me-1"></i> Contact
+                    </a>
+                    {% endif %}
+                    
+                    {% if person.website %}
+                    <a href="{{ person.website }}" target="_blank" class="btn btn-outline-secondary">
+                        <i class="fas fa-globe me-1"></i> Website
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <!-- Contact Information -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">Contact Information</h5>
+            </div>
+            <ul class="list-group list-group-flush">
+                {% if person.email %}
+                <li class="list-group-item">
+                    <i class="fas fa-envelope me-2 text-muted"></i>
+                    <a href="mailto:{{ person.email }}">{{ person.email }}</a>
+                </li>
+                {% endif %}
+                
+                {% if person.phone %}
+                <li class="list-group-item">
+                    <i class="fas fa-phone me-2 text-muted"></i>
+                    <a href="tel:{{ person.phone }}">{{ person.phone }}</a>
+                </li>
+                {% endif %}
+                
+                {% if person.office %}
+                <li class="list-group-item">
+                    <i class="fas fa-map-marker-alt me-2 text-muted"></i>
+                    {{ person.office }}
+                </li>
+                {% endif %}
+                
+                {% if person.office_hours %}
+                <li class="list-group-item">
+                    <i class="far fa-clock me-2 text-muted"></i>
+                    Office Hours: {{ person.office_hours }}
+                </li>
+                {% endif %}
+            </ul>
+        </div>
+        
+        <!-- Research Areas -->
+        {% if person.research_areas.exists %}
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">Research Areas</h5>
+            </div>
+            <div class="card-body">
+                <div class="d-flex flex-wrap gap-2">
+                    {% for area in person.research_areas.all %}
+                    <a href="#" class="badge bg-light text-dark text-decoration-none">
+                        {{ area.name }}
+                    </a>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        {% endif %}
+        
+        <!-- Education -->
+        {% if person.education.exists %}
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">Education</h5>
+            </div>
+            <ul class="list-group list-group-flush">
+                {% for edu in person.education.all %}
+                <li class="list-group-item">
+                    <h6 class="mb-1">{{ edu.degree }}, {{ edu.field_of_study }}</h6>
+                    <p class="mb-1">{{ edu.institution }}</p>
+                    <small class="text-muted">{{ edu.start_year }} - {{ edu.end_year|default:"Present" }}</small>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% endif %}
+    </div>
+    
+    <!-- Right Column -->
+    <div class="col-lg-8">
+        <!-- About -->
+        {% if person.biography %}
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">About</h5>
+            </div>
+            <div class="card-body">
+                {{ person.biography|linebreaks }}
+            </div>
+        </div>
+        {% endif %}
+        
+        <!-- Tabs -->
+        <ul class="nav nav-tabs mb-4" id="profileTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="publications-tab" data-bs-toggle="tab" 
+                        data-bs-target="#publications" type="button" role="tab" aria-controls="publications" 
+                        aria-selected="true">
+                    Publications
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="projects-tab" data-bs-toggle="tab" 
+                        data-bs-target="#projects" type="button" role="tab" aria-controls="projects" 
+                        aria-selected="false">
+                    Projects
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="teaching-tab" data-bs-toggle="tab" 
+                        data-bs-target="#teaching" type="button" role="tab" aria-controls="teaching" 
+                        aria-selected="false">
+                    Teaching
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="presentations-tab" data-bs-toggle="tab" 
+                        data-bs-target="#presentations" type="button" role="tab" aria-controls="presentations" 
+                        aria-selected="false">
+                    Presentations
+                </button>
+            </li>
+        </ul>
+        
+        <!-- Tab Content -->
+        <div class="tab-content" id="profileTabsContent">
+            <!-- Publications Tab -->
+            <div class="tab-pane fade show active" id="publications" role="tabpanel" aria-labelledby="publications-tab">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h5 class="mb-0">Publications</h5>
+                            <div>
+                                <button class="btn btn-sm btn-outline-secondary">
+                                    <i class="fas fa-download"></i> Export
+                                </button>
+                                <button class="btn btn-sm btn-outline-secondary">
+                                    <i class="fas fa-filter"></i> Filter
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="list-group list-group-flush">
+                            {% for pub in publications %}
+                            <div class="list-group-item">
+                                <h6 class="mb-1">
+                                    <a href="#" class="text-decoration-none">{{ pub.title }}</a>
+                                </h6>
+                                <p class="mb-1 small">
+                                    {{ pub.authors|join:", " }}
+                                </p>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <small class="text-muted">{{ pub.journal }}, {{ pub.year }}</small>
+                                    <div>
+                                        <a href="#" class="btn btn-sm btn-outline-secondary me-1">
+                                            <i class="fas fa-link"></i>
+                                        </a>
+                                        <a href="#" class="btn btn-sm btn-outline-secondary">
+                                            <i class="far fa-file-pdf"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                            {% empty %}
+                            <div class="alert alert-info mb-0">
+                                No publications found.
+                            </div>
+                            {% endfor %}
+                        </div>
+                        
+                        {% if publications.has_other_pages %}
+                        <nav class="mt-3">
+                            <ul class="pagination pagination-sm justify-content-center">
+                                {% if publications.has_previous %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ publications.previous_page_number }}" aria-label="Previous">
+                                        <span aria-hidden="true">&laquo;</span>
+                                    </a>
+                                </li>
+                                {% else %}
+                                <li class="page-item disabled">
+                                    <span class="page-link">&laquo;</span>
+                                </li>
+                                {% endif %}
+                                
+                                {% for i in publications.paginator.page_range %}
+                                    {% if publications.number == i %}
+                                    <li class="page-item active"><span class="page-link">{{ i }}</span></li>
+                                    {% else %}
+                                    <li class="page-item"><a class="page-link" href="?page={{ i }}">{{ i }}</a></li>
+                                    {% endif %}
+                                {% endfor %}
+                                
+                                {% if publications.has_next %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ publications.next_page_number }}" aria-label="Next">
+                                        <span aria-hidden="true">&raquo;</span>
+                                    </a>
+                                </li>
+                                {% else %}
+                                <li class="page-item disabled">
+                                    <span class="page-link">&raquo;</span>
+                                </li>
+                                {% endif %}
+                            </ul>
+                        </nav>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Projects Tab -->
+            <div class="tab-pane fade" id="projects" role="tabpanel" aria-labelledby="projects-tab">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title mb-4">Research Projects</h5>
+                        {% if projects %}
+                            {% for project in projects %}
+                            <div class="mb-4">
+                                <h6>{{ project.title }}</h6>
+                                <p class="small text-muted">
+                                    {{ project.start_date|date:"Y" }}{% if project.end_date %} - {{ project.end_date|date:"Y" }}{% else %} - Present{% endif %}
+                                    {% if project.funding_agency %}| {{ project.funding_agency }}{% endif %}
+                                </p>
+                                <p>{{ project.description|truncatewords:50 }}</p>
+                                {% if project.collaborators.exists %}
+                                <p class="small">
+                                    <strong>Collaborators:</strong>
+                                    {% for collab in project.collaborators.all %}
+                                        <a href="#">{{ collab.name }}</a>{% if not forloop.last %}, {% endif %}
+                                    {% endfor %}
+                                </p>
+                                {% endif %}
+                                {% if project.website %}
+                                <a href="{{ project.website }}" target="_blank" class="btn btn-sm btn-outline-primary">
+                                    <i class="fas fa-external-link-alt"></i> Project Website
+                                </a>
+                                {% endif %}
+                            </div>
+                            {% if not forloop.last %}<hr>{% endif %}
+                            {% endfor %}
+                        {% else %}
+                            <div class="alert alert-info mb-0">
+                                No projects found.
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Teaching Tab -->
+            <div class="tab-pane fade" id="teaching" role="tabpanel" aria-labelledby="teaching-tab">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title mb-4">Teaching</h5>
+                        {% if teaching_courses %}
+                            {% for course in teaching_courses %}
+                            <div class="mb-3">
+                                <div class="d-flex justify-content-between">
+                                    <h6>{{ course.code }}: {{ course.title }}</h6>
+                                    <span class="badge bg-light text-dark">{{ course.term }} {{ course.year }}</span>
+                                </div>
+                                {% if course.role %}
+                                <p class="small text-muted mb-1">Role: {{ course.role }}</p>
+                                {% endif %}
+                                {% if course.description %}
+                                <p class="small">{{ course.description|truncatewords:30 }}</p>
+                                {% endif %}
+                            </div>
+                            {% if not forloop.last %}<hr>{% endif %}
+                            {% endfor %}
+                        {% else %}
+                            <div class="alert alert-info mb-0">
+                                No teaching information available.
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Presentations Tab -->
+            <div class="tab-pane fade" id="presentations" role="tabpanel" aria-labelledby="presentations-tab">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title mb-4">Presentations</h5>
+                        {% if presentations %}
+                            {% for pres in presentations %}
+                            <div class="mb-3">
+                                <h6>{{ pres.title }}</h6>
+                                <p class="small text-muted mb-1">
+                                    {{ pres.event }} | {{ pres.date|date:"F j, Y" }}
+                                    {% if pres.location %}| {{ pres.location }}{% endif %}
+                                </p>
+                                {% if pres.description %}
+                                <p class="small">{{ pres.description|truncatewords:30 }}</p>
+                                {% endif %}
+                            </div>
+                            {% if not forloop.last %}<hr>{% endif %}
+                            {% endfor %}
+                        {% else %}
+                            <div class="alert alert-info mb-0">
+                                No presentations found.
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

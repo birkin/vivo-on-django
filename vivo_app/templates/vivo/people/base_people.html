@@ -1,0 +1,179 @@
+{% extends 'vivo/base/base.html' %}
+
+{% block breadcrumb_items %}
+    {{ block.super }}
+    <li class="breadcrumb-item"><a href="{% url 'people:index' %}" class="text-white">People</a></li>
+    {% block people_breadcrumb %}{% endblock %}
+{% endblock %}
+
+{% block extra_css %}
+{{ block.super }}
+<style>
+    .person-card {
+        transition: transform 0.2s;
+        height: 100%;
+    }
+    .person-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    .person-avatar {
+        width: 120px;
+        height: 120px;
+        object-fit: cover;
+        border-radius: 50%;
+        margin: 0 auto 1rem;
+        display: block;
+        border: 3px solid #f8f9fa;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h1>{% block people_title %}People{% endblock %}</h1>
+            <p class="lead">{% block people_subtitle %}Browse researchers and scholars{% endblock %}</p>
+        </div>
+        <div class="col-md-4 text-md-end">
+            {% block people_actions %}
+            <div class="btn-group" role="group">
+                <button type="button" class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#filtersModal">
+                    <i class="fas fa-filter"></i> Filters
+                </button>
+                <div class="btn-group" role="group">
+                    <button id="viewOptions" type="button" class="btn btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown">
+                        <i class="fas fa-th-list"></i> View
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li><a class="dropdown-item view-option active" href="#" data-view="list"><i class="fas fa-list"></i> List View</a></li>
+                        <li><a class="dropdown-item view-option" href="#" data-view="grid"><i class="fas fa-th-large"></i> Grid View</a></li>
+                        <li><a class="dropdown-item view-option" href="#" data-view="table"><i class="fas fa-table"></i> Table View</a></li>
+                    </ul>
+                </div>
+            </div>
+            {% endblock %}
+        </div>
+    </div>
+
+    <!-- Filters Modal -->
+    <div class="modal fade" id="filtersModal" tabindex="-1" aria-labelledby="filtersModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="filtersModalLabel">Filter People</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="peopleFilters" method="get">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="department" class="form-label">Department</label>
+                                    <select class="form-select" id="department" name="department">
+                                        <option value="">All Departments</option>
+                                        {% for dept in departments %}
+                                        <option value="{{ dept.id }}" {% if request.GET.department == dept.id|stringformat:'s' %}selected{% endif %}>
+                                            {{ dept.name }}
+                                        </option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="researchArea" class="form-label">Research Area</label>
+                                    <select class="form-select" id="researchArea" name="research_area">
+                                        <option value="">All Research Areas</option>
+                                        {% for area in research_areas %}
+                                        <option value="{{ area.id }}" {% if request.GET.research_area == area.id|stringformat:'s' %}selected{% endif %}>
+                                            {{ area.name }}
+                                        </option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="name" class="form-label">Name</label>
+                                    <input type="text" class="form-control" id="name" name="name" 
+                                           value="{{ request.GET.name|default:'' }}" placeholder="Search by name">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="title" class="form-label">Title</label>
+                                    <input type="text" class="form-control" id="title" name="title" 
+                                           value="{{ request.GET.title|default:'' }}" placeholder="Search by title">
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <a href="{% url 'people:index' %}" class="btn btn-outline-danger me-auto">Reset</a>
+                    <button type="submit" form="peopleFilters" class="btn btn-primary">Apply Filters</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% block people_content %}
+    <!-- People content will be inserted here -->
+    {% endblock %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+{{ block.super }}
+<script>
+    // View mode toggle
+    document.addEventListener('DOMContentLoaded', function() {
+        const viewOptions = document.querySelectorAll('.view-option');
+        const peopleContainer = document.getElementById('peopleContainer');
+        
+        viewOptions.forEach(option => {
+            option.addEventListener('click', function(e) {
+                e.preventDefault();
+                const view = this.getAttribute('data-view');
+                
+                // Update active state
+                viewOptions.forEach(opt => opt.classList.remove('active'));
+                this.classList.add('active');
+                
+                // Update view mode
+                if (peopleContainer) {
+                    peopleContainer.className = '';
+                    peopleContainer.classList.add('row', 'row-cols-1');
+                    
+                    switch(view) {
+                        case 'grid':
+                            peopleContainer.classList.add('row-cols-md-2', 'row-cols-lg-3', 'g-4');
+                            break;
+                        case 'table':
+                            peopleContainer.classList.add('table-view');
+                            break;
+                        default: // list
+                            peopleContainer.classList.add('g-3');
+                    }
+                    
+                    // Store preference
+                    localStorage.setItem('peopleViewMode', view);
+                }
+            });
+        });
+        
+        // Load saved view preference
+        const savedView = localStorage.getItem('peopleViewMode') || 'list';
+        const activeView = document.querySelector(`.view-option[data-view="${savedView}"]`);
+        if (activeView) {
+            activeView.click();
+        }
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,162 @@
+{% extends 'vivo/people/base_people.html' %}
+
+{% block people_title %}{% if query %}Search Results for "{{ query }}"{% else %}Browse Researchers{% endif %}{% endblock %}
+
+{% block people_subtitle %}
+    {% if page_obj.paginator.count %}
+        Showing {{ page_obj.start_index }}-{{ page_obj.end_index }} of {{ page_obj.paginator.count }} researchers
+    {% else %}
+        No researchers found
+    {% endif %}
+{% endblock %}
+
+{% block people_content %}
+<div id="peopleContainer" class="row row-cols-1 g-3">
+    {% for person in people %}
+    <div class="col">
+        <div class="card person-card">
+            <div class="row g-0">
+                <div class="col-md-2 d-flex align-items-center justify-content-center p-3">
+                    <img src="{% if person.image %}{{ person.image.url }}{% else %}{% static 'img/default-avatar.png' %}{% endif %}" 
+                         alt="{{ person.name }}" 
+                         class="img-fluid rounded-circle" 
+                         style="width: 100px; height: 100px; object-fit: cover;">
+                </div>
+                <div class="col-md-10">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between">
+                            <h5 class="card-title mb-1">
+                                <a href="{% url 'people:detail' person.id %}" class="text-decoration-none">
+                                    {{ person.name }}
+                                </a>
+                            </h5>
+                            <div>
+                                {% if person.orcid_id %}
+                                <a href="https://orcid.org/{{ person.orcid_id }}" target="_blank" 
+                                   class="text-decoration-none" title="ORCID Profile">
+                                    <img src="{% static 'img/orcid.svg' %}" alt="ORCID" style="height: 20px; width: 20px;">
+                                </a>
+                                {% endif %}
+                                {% if person.google_scholar_id %}
+                                <a href="https://scholar.google.com/citations?user={{ person.google_scholar_id }}" 
+                                   target="_blank" class="ms-1 text-decoration-none" title="Google Scholar">
+                                    <i class="fas fa-graduation-cap text-muted"></i>
+                                </a>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        {% if person.title %}
+                        <p class="card-subtitle mb-2 text-muted">{{ person.title }}</p>
+                        {% endif %}
+                        
+                        {% if person.departments.exists %}
+                        <p class="card-text small mb-1">
+                            <i class="fas fa-building me-1 text-muted"></i>
+                            {% for dept in person.departments.all %}
+                                <a href="{% url 'organizations:detail' dept.id %}" class="text-decoration-none">
+                                    {{ dept.name }}{% if not forloop.last %}, {% endif %}
+                                </a>
+                            {% endfor %}
+                        </p>
+                        {% endif %}
+                        
+                        {% if person.research_areas.exists %}
+                        <p class="card-text small mb-2">
+                            <i class="fas fa-tags me-1 text-muted"></i>
+                            {% for area in person.research_areas.all %}
+                                <a href="?research_area={{ area.id }}" class="badge bg-light text-dark text-decoration-none">
+                                    {{ area.name }}
+                                </a>
+                            {% endfor %}
+                        </p>
+                        {% endif %}
+                        
+                        <div class="d-flex justify-content-between align-items-center mt-2">
+                            {% if person.publication_count %}
+                            <span class="badge bg-light text-dark">
+                                <i class="fas fa-file-alt me-1"></i> {{ person.publication_count }} publications
+                            </span>
+                            {% endif %}
+                            
+                            <a href="{% url 'people:detail' person.id %}" class="btn btn-sm btn-outline-primary">
+                                View Profile <i class="fas fa-arrow-right ms-1"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <div class="col">
+        <div class="card">
+            <div class="card-body text-center py-5">
+                <i class="fas fa-user-slash fa-3x text-muted mb-3"></i>
+                <h5>No researchers found</h5>
+                <p class="text-muted">Try adjusting your search or filters</p>
+                <a href="?" class="btn btn-primary mt-2">Clear all filters</a>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+{% if is_paginated %}
+<nav aria-label="Page navigation" class="mt-4">
+    <ul class="pagination justify-content-center">
+        {% if page_obj.has_previous %}
+        <li class="page-item">
+            <a class="page-link" href="?page=1{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}" aria-label="First">
+                <span aria-hidden="true">&laquo;&laquo;</span>
+            </a>
+        </li>
+        <li class="page-item">
+            <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}" aria-label="Previous">
+                <span aria-hidden="true">&laquo;</span>
+            </a>
+        </li>
+        {% else %}
+        <li class="page-item disabled">
+            <span class="page-link">&laquo;&laquo;</span>
+        </li>
+        <li class="page-item disabled">
+            <span class="page-link">&laquo;</span>
+        </li>
+        {% endif %}
+        
+        {% for num in page_obj.paginator.page_range %}
+            {% if page_obj.number == num %}
+            <li class="page-item active">
+                <span class="page-link">{{ num }}</span>
+            </li>
+            {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ num }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">{{ num }}</a>
+            </li>
+            {% endif %}
+        {% endfor %}
+        
+        {% if page_obj.has_next %}
+        <li class="page-item">
+            <a class="page-link" href="?page={{ page_obj.next_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}" aria-label="Next">
+                <span aria-hidden="true">&raquo;</span>
+            </a>
+        </li>
+        <li class="page-item">
+            <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}" aria-label="Last">
+                <span aria-hidden="true">&raquo;&raquo;</span>
+            </a>
+        </li>
+        {% else %}
+        <li class="page-item disabled">
+            <span class="page-link">&raquo;</span>
+        </li>
+        <li class="page-item disabled">
+            <span class="page-link">&raquo;&raquo;</span>
+        </li>
+        {% endif %}
+    </ul>
+</nav>
+{% endif %}
+{% endblock %}

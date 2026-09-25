@@ -1,0 +1,52 @@
+<footer class="bg-dark text-white py-4 mt-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-4 mb-3">
+                <h5>About VIVO</h5>
+                <p class="text-muted">A research discovery tool that enables collaboration among scientists across all disciplines.</p>
+            </div>
+            <div class="col-md-2 mb-3">
+                <h5>Quick Links</h5>
+                <ul class="list-unstyled">
+                    <li><a href="{% url 'about' %}" class="text-muted">About</a></li>
+                    <li><a href="{% url 'help' %}" class="text-muted">Help</a></li>
+                    <li><a href="{% url 'contact' %}" class="text-muted">Contact</a></li>
+                    <li><a href="{% url 'privacy' %}" class="text-muted">Privacy Policy</a></li>
+                </ul>
+            </div>
+            <div class="col-md-3 mb-3">
+                <h5>Connect</h5>
+                <ul class="list-inline">
+                    <li class="list-inline-item">
+                        <a href="#" class="text-muted"><i class="fab fa-twitter fa-lg"></i></a>
+                    </li>
+                    <li class="list-inline-item ms-2">
+                        <a href="#" class="text-muted"><i class="fab fa-facebook fa-lg"></i></a>
+                    </li>
+                    <li class="list-inline-item ms-2">
+                        <a href="#" class="text-muted"><i class="fab fa-linkedin fa-lg"></i></a>
+                    </li>
+                    <li class="list-inline-item ms-2">
+                        <a href="#" class="text-muted"><i class="fab fa-github fa-lg"></i></a>
+                    </li>
+                </ul>
+            </div>
+            <div class="col-md-3 mb-3">
+                <h5>Powered by</h5>
+                <p class="text-muted">
+                    <a href="https://djangoproject.com" class="text-muted text-decoration-none">
+                        <i class="fab fa-python me-1"></i> Django
+                    </a>
+                    <br>
+                    <a href="https://vivo-project.org" class="text-muted text-decoration-none">
+                        VIVO
+                    </a>
+                </p>
+            </div>
+        </div>
+        <hr class="bg-secondary">
+        <div class="text-center text-muted">
+            <small>&copy; {% now "Y" %} VIVO Frontend. All rights reserved.</small>
+        </div>
+    </div>
+</footer>

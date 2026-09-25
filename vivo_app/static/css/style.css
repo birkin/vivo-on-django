@@ -1,0 +1,12 @@
+/* Supplemental overrides specific to the Django port. */
+.hidden-quick-links {
+    display: none;
+}
+
+body.no-logo.fae {
+    background-color: #fff;
+}
+
+#wrapper-content {
+    min-height: 50vh;
+}

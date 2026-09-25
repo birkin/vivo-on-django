@@ -1,0 +1,167 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block title %}Researchers @ Brown{% endblock %}
+
+{% block body_class %}home{% endblock %}
+
+{% block content %}
+    <h1 class="sr-only">Welcome to Researchers@Brown</h1>
+
+    <div class="row hero" style="background-image: url({% static hero_background_relpath %}); background-size: cover; background-position: 50% 50%; background-repeat: no-repeat;">
+      <div class="theme-showcase">
+        <div class="col-md-12">
+          <div class="container" role="main">
+
+            <div class="jumbotron">
+              <img src="{% static 'images/RaB-type2.svg' %}"
+                style="width: 64%; padding-bottom: 0; margin-bottom: 0;"
+                alt="Researchers at Brown">
+            </div>
+            <form id="search-homepage" action="{% url 'search' %}" name="search-home" role="search" method="GET">
+              <div class="input-group input-group-lg">
+                <input class="form-control" id="q" name="q" placeholder="Search for an expert..." title="Enter text to search for" type="text">
+                <div class="input-group-btn">
+                  <button type="submit" class="btn btn-default btn-lg sympl-search">
+                    <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
+                    <span aria-hidden="true">Search</span>
+                  </button>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+        <div class="col-md-12">
+          <div class="container">
+            <div id="homepage-link-row">
+              <a href="{% url 'advanced_search' %}">Advanced search&hellip;</a>
+            </div>
+            <div class="jumbotron"><p>&nbsp;</p></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    {% if book_covers_paginated %}
+    <div class="row faculty-home">
+      <div class="container">
+        <div class="col-md-12">
+
+          <h2 class="h1">Recent faculty books</h2>
+          <h5><em>Click book jacket to view faculty profile</em></h5>
+          <div class="gap20"></div>
+
+          <div class="carousel slide multi-item-carousel" id="books-carousel">
+            <div class="carousel-inner">
+              {% for page in book_covers_paginated %}
+              <div class="item {% if forloop.first %}active{% endif %}">
+                <ul>
+                  {% for cover in page %}
+                    <a href="{{ cover.author_url }}" class="book-cover">
+                      <img data-src="{{ cover.image_url }}" alt="{{ cover.title }}" title="{{ cover.title }}" width="160">
+                    </a>
+                  {% endfor %}
+                </ul>
+              </div>
+              {% endfor %}
+            </div>
+            <a class="left carousel-control" href="#books-carousel" role="button" data-slide="prev">
+                <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
+                <span class="sr-only">Previous</span>
+            </a>
+            <a class="right carousel-control" href="#books-carousel" role="button" data-slide="next">
+                <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
+                <span class="sr-only">Next</span>
+            </a>
+          </div> <!-- books-carousel -->
+        </div> <!-- col-md-12 -->
+      </div> <!-- container -->
+    </div> <!-- row faculty-home -->
+    {% endif %}
+
+    <div class="three-big-blocks">
+      <div class="icons-home">
+        <a href="{% url 'search' %}" id="icon1">
+          <span class="glyphicon glyphicon-user large-glyphicon"></span>
+          <h3>Search for a Researcher</h3>
+        </a>
+      </div>
+      <div class="icons-home">
+       <h3>Did You Know?</h3>
+        <ul>
+        <li class="news-link"><img src="{% static 'images/viz_mini.png' %}" style="float: left; margin-right: 10px;" alt="Visualization icon"> Visualize it! See your Brown co-author and collaborator networks come to life.  Use visualizations to showcase your research in grant proposals, presentations, social media posts,
+        and more.  <a href="{% url 'help_viz' %}">More info</a>.
+        <li class="news-link">You can assign one or more deputies to update your profile. <a href="{% url 'faq' %}#assign_deputy">Learn how</a>.
+        <li class="news-link">Your profile is highly discoverable. This site has over half a million visitors and 2 million pageviews a year.
+        <li class="news-link"><a href="https://bitly.com/vivoseo" target="_blank">In a recent study</a>, Brown ranked #1 out of 90 sites for the highest proportion of profiles in the top 3 Google search results.
+        </ul>
+      </div>
+      <div class="icons-home">
+        <a href="https://library.brown.edu/orcid/" id="icon2">
+          <span>
+            <svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+               viewBox="0 0 256 256" style="enable-background:new 0 0 256 256;" xml:space="preserve" aria-hidden="true">
+              <style type="text/css">
+                .st0{fill:#A6CE39;}
+                .st1{fill:#FFFFFF;}
+              </style>
+              <path class="st0" d="M256,128c0,70.7-57.3,128-128,128C57.3,256,0,198.7,0,128C0,57.3,57.3,0,128,0C198.7,0,256,57.3,256,128z"/>
+              <g>
+                <path class="st1" d="M86.3,186.2H70.9V79.1h15.4v48.4V186.2z"/>
+                <path class="st1" d="M108.9,79.1h41.6c39.6,0,57,28.3,57,53.6c0,27.5-21.5,53.6-56.8,53.6h-41.8V79.1z M124.3,172.4h24.5
+                  c34.9,0,42.9-26.5,42.9-39.7c0-21.5-13.7-39.7-43.7-39.7h-23.7V172.4z"/>
+                <path class="st1" d="M88.7,56.8c0,5.5-4.5,10.1-10.1,10.1c-5.6,0-10.1-4.6-10.1-10.1c0-5.6,4.5-10.1,10.1-10.1
+                  C84.2,46.7,88.7,51.3,88.7,56.8z"/>
+              </g>
+            </svg>
+          </span>
+          <h3>Get a Brown ORCID Identifier!</h3>
+        </a>
+      </div>
+    </div>
+    
+    <div class="hidden-quick-links">
+      <a href="{% url 'people' %}">Browse People</a>
+      <a href="{% url 'organizations' %}">Browse Organizations</a>
+      <a href="{% url 'publications' %}">Publications</a>
+    </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  (function initialiseHomeCarousel() {
+    var searchInput = document.getElementById('q');
+    if (searchInput) {
+      searchInput.focus();
+    }
+
+    if (!window.jQuery) {
+      return;
+    }
+
+    var carousel = window.jQuery('#books-carousel');
+    if (!carousel.length) {
+      return;
+    }
+
+    function setCarouselImages(imgTags, count) {
+      for (var index = 0; index < count; index += 1) {
+        var img = window.jQuery(imgTags[index]);
+        if (typeof img.attr('src') === 'undefined') {
+          img.attr('src', img.data('src'));
+        }
+      }
+    }
+
+    carousel.carousel({ interval: 5000 });
+    carousel.on('slide.bs.carousel', function onSlide(event) {
+      var imgTags = window.jQuery(event.relatedTarget).find('img');
+      setCarouselImages(imgTags, imgTags.length);
+    });
+
+    var initialImages = carousel.find('img');
+    setCarouselImages(initialImages, Math.min(initialImages.length, 4));
+  }());
+</script>
+{% endblock %}

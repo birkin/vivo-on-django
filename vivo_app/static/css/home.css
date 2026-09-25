@@ -1,0 +1,571 @@
+/* Minimal homepage styles to approximate production layout without redesign */
+
+.recent-books {
+    margin: 2rem 0;
+    padding: 1rem;
+    background: #f8f8f8;
+    border-radius: 6px;
+}
+
+/* Larger wordmark on large screens */
+@media (min-width: 992px) {
+    .jumbotron img {
+        width: 75% !important;
+    }
+}
+
+.recent-books h2 {
+    margin-top: 0;
+}
+
+.recent-books .caption {
+    color: #666;
+    font-size: 0.9rem;
+}
+
+.recent-books .carousel-controls {
+    margin-top: 0.5rem;
+}
+
+.recent-books .carousel-controls .prev,
+.recent-books .carousel-controls .next {
+    margin-right: 0.5rem;
+}
+
+.search-box {
+    margin: 1.5rem 0 0.5rem 0;
+}
+
+.search-box form {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.search-box input[type="text"] {
+    flex: 1;
+    padding: 0.6rem 0.8rem;
+}
+
+.search-box button[type="submit"] {
+    padding: 0.6rem 1rem;
+}
+
+.advanced-search-link {
+    margin-top: 0.25rem;
+}
+
+.quick-links {
+    margin: 2rem 0;
+}
+
+.quick-links ul {
+    list-style: none;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem 2rem;
+}
+
+.quick-links a {
+    text-decoration: underline;
+}
+
+.did-you-know {
+    margin: 2rem 0;
+    padding: 1rem;
+    background: #f1f5f9;
+    border-radius: 6px;
+}
+
+.did-you-know ul {
+    margin: 0.5rem 1rem;
+}
+
+.did-you-know li+li {
+    margin-top: 0.5rem;
+}
+
+.orcid {
+    margin: 2rem 0;
+    padding: 1rem;
+    background: #eef7ea;
+    border-left: 4px solid #a6ce39;
+    /* VIVO green */
+}
+
+.orcid a {
+    font-weight: 600;
+}
+
+/* Typography: apply Source Sans Pro on the homepage */
+body {
+    font-family: 'Source Sans Pro', Helvetica, Arial, sans-serif;
+    margin: 0; /* remove default browser margins that create thin strips at page edges */
+}
+
+/* Hero area with dark overlay */
+.hero {
+    background-color: #3c1605;
+    /* fallback color */
+    background-image: linear-gradient(180deg, rgba(60, 22, 5, 0.55), rgba(60, 22, 5, 0.55)), var(--hero-bg-image, url('../images/vivo_blank_profile.jpg'));
+    background-size: cover;
+    background-position: 50% 50%;
+    background-repeat: no-repeat;
+    position: relative;
+    z-index: 0; /* ensure hero stays behind #branding for crest overhang */
+}
+
+/* Thin top branding bar (logo left, link right) */
+.branding-bar {
+    background-color: #594036;
+    /* Brown header */
+    color: #fff;
+    line-height: 1;
+}
+
+.branding-bar .branding-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-height: 44px;
+    padding: 6px 0;
+    position: relative; /* allow absolute-positioning of crest */
+}
+
+/* Make the branding bar span full width and push logo far left (near viewport edge) */
+.branding-bar .container {
+  max-width: none;                  /* escape Bootstrap fixed widths */
+  width: 100% !important;          /* prevent Bootstrap fixed widths from centering */
+  padding-left: 0 !important;      /* defeat Bootstrap container padding */
+  margin-left: 0 !important;       /* ensure no auto-centering offset */
+  margin-right: 0 !important;
+  padding-right: 12px;             /* keep right spacing for the Manage link */
+}
+.branding-bar .brown-logo {
+  display: inline-block;          /* allow horizontal offsets to apply */
+  position: absolute;             /* pin to the left edge of the inner bar */
+  left: 10px !important;          /* nudge 10px to the right */
+}
+
+/* ensure the right-side link stays at the far right when logo is absolute */
+.branding-bar .manage-profile-link { margin-left: auto; }
+
+.branding-bar .brown-logo img {
+    height: 36px;
+    /* larger crest+wordmark as in production */
+    display: block;
+}
+
+.branding-bar .manage-profile-link {
+    color: #fff;
+    opacity: .85;
+    font-size: 0.95rem;
+    text-decoration: none;
+}
+
+.branding-bar .manage-profile-link:hover {
+    border-bottom: 2px solid #aaa;
+    color: #bbb;
+    opacity: .9;
+    text-decoration: none;
+}
+
+.branding-bar .manage-profile-link:visited {
+    color: #fff;
+    opacity: .67;
+}
+
+@media (max-width: 767px) {
+    .branding-bar .branding-inner {
+        min-height: 40px;
+        padding: 8px 0;
+    }
+
+    .branding-bar .brown-logo img {
+        height: 30px;
+    }
+
+    .branding-bar .manage-profile-link {
+        font-size: 0.9rem;
+    }
+}
+
+/* Theme showcase overlay block (from Rails homepage.css) */
+@media (min-width: 0px) and (max-width: 768px) {
+    .theme-showcase {
+        width: 100%;
+        height: 14em;
+        padding: 10% 0 0 0;
+        margin-top: 8em;
+        margin-bottom: 6em;
+        background-color: rgba(60, 22, 5, 0.6);
+        display: block;
+    }
+
+    .jumbotron img {
+        width: 100%;
+    }
+
+    div.jumbotron p {
+        padding-bottom: 2em;
+        margin-top: -3em;
+        margin-bottom: 1em;
+    }
+}
+
+@media (min-width: 768px) {
+    .theme-showcase {
+        width: 100%;
+        height: 24em;
+        padding: 6% 0 14% 0;
+        margin-top: 12em;
+        background-color: rgba(60, 22, 5, 0.6);
+        display: block;
+    }
+}
+
+.jumbotron {
+    background-color: transparent;
+    color: #ffffff;
+    text-align: center;
+    text-shadow: 1px 1px 4px #000;
+    padding-top: 7.5em;
+    padding-bottom: 0;
+    margin-top: -10.25em;
+}
+
+#search-homepage input.form-control {
+    opacity: 0.9;
+    border-radius: 24px 0 0 24px;
+    background-color: #fff;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+
+#search-homepage .sympl-search {
+    margin-left: 5px;
+    border-radius: 0 24px 24px 0;
+    background-color: #831B1B;
+    /* Brown red */
+    border-color: #6b1313;
+    color: #fff;
+    padding: 10px 16px 10px 14px;
+}
+
+#search-homepage .glyphicon-search {
+    margin-right: 6px;
+}
+
+#homepage-link-row {
+    text-align: center;
+    margin-top: 1em;
+    color: #B9B9B8;
+}
+
+#homepage-link-row a {
+    color: #ddd;
+    font-weight: 600;
+    transition: none;
+}
+
+#homepage-link-row a:hover {
+    border-bottom: 2px solid #aaa;
+    color: #bbb;
+    text-decoration: none;
+}
+
+p a.manage-profile-link {
+    color: white;
+    opacity: .85;
+    position: absolute;
+    right: 5%;
+    top: 1rem;
+    font-size: 0.95rem;
+}
+
+p a.manage-profile-link:hover {
+    border-bottom: 2px solid #aaa;
+    color: #bbb;
+    opacity: .9;
+    text-decoration: none;
+}
+
+p a.manage-profile-link:visited {
+    color: white;
+    opacity: .67;
+}
+
+/* Home page layout adjustments */
+.home-page > header {
+    display: none;
+}
+
+.home-page main.container {
+    max-width: 100% !important;
+    width: 100% !important;
+    padding: 0 !important;
+}
+
+.home-page #search-homepage .input-group {
+    max-width: 900px;
+    width: 80%;
+    margin: 0 auto;
+}
+
+.home-page #homepage-link-row {
+    margin-top: 0.75rem;
+}
+
+/* Faculty books section */
+.faculty-home {
+    text-align: center;
+    padding: 45px 0;
+    background: #CCC6B8;
+    border: none;
+    border-width: 0;
+}
+
+.book-cover {
+    text-align: center;
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+.large-glyphicon {
+    color: #fff;
+    font-size: 10rem;
+}
+
+/* Brand row in hero */
+.home-brand-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.home-brand-row .brown-brand {
+    color: #fff;
+    font-weight: 700;
+    letter-spacing: 1px;
+}
+
+.home-brand-row img {
+    height: 42px;
+}
+
+/* Subtle bottom stripe to separate hero from next section */
+.hero::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 18px;
+    background-color: rgba(60, 22, 5, 0.85);
+}
+
+/* Utility */
+.gap20 {
+    height: 20px;
+}
+
+/* Three big blocks (ported) */
+.three-big-blocks {
+    background-color: #CCC6B8;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-gap: 1rem;
+    margin: 0;
+}
+
+.icons-home:nth-child(1) {
+    background-color: #831B1B;
+}
+
+.icons-home:nth-child(1):hover {
+    background-color: hsla(0, 66%, 25%, 1);
+    transition-property: background-color;
+    transition-duration: .2s;
+    transition-timing-function: ease;
+}
+
+.icons-home:nth-child(2) {
+    background-color: #F5F2EC;
+    padding: 3rem 2.5rem 1.5rem 2.5rem;
+}
+
+.icons-home:nth-child(2) h3 {
+    color: #333;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+}
+
+.icons-home:nth-child(2) ul {
+    list-style: none;
+    padding: 0;
+}
+
+.icons-home:nth-child(2) li {
+    margin-bottom: 1rem;
+}
+
+.icons-home:nth-child(2) a {
+    color: #594036;
+    font-weight: 600;
+}
+
+.icons-home:nth-child(2) a:hover {
+    border-bottom: 4px solid #594036;
+    line-height: 1rem;
+}
+
+.icons-home:nth-child(3) {
+    background-color: #594036;
+}
+
+.icons-home:nth-child(3):hover {
+    background-color: hsla(17, 24%, 20%, 1);
+    transition-property: background-color;
+    transition-duration: .2s;
+    transition-timing-function: ease;
+}
+
+.icons-home h3 {
+    color: #fff;
+    margin: 0;
+    padding: 0 1rem;
+    text-align: center;
+}
+
+.icons-home>a {
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: 5fr 3fr;
+    grid-gap: 1.5rem;
+    height: 100%;
+}
+
+.icons-home>a span {
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+}
+
+.icons-home svg {
+    width: 10rem;
+}
+
+@media screen and (max-width: 767px) {
+    .three-big-blocks {
+        grid-template-columns: 1fr;
+        grid-template-rows: minmax(500px, 1fr), 1fr, minmax(250px, 1fr);
+    }
+
+    .icons-home:nth-child(odd) {
+        padding: 4rem 0 2rem 0;
+    }
+
+    .glyphicon-user {
+        font-size: 7rem;
+    }
+
+    .icons-home svg {
+        width: 8rem;
+    }
+}
+
+@supports not (display: grid) {
+    .three-big-blocks {
+        display: flex;
+    }
+
+    .icons-home {
+        flex: 1 0 0%;
+    }
+
+    .icons-home h3 {
+        font-size: 2rem;
+    }
+
+    .icons-home:nth-child(odd) {
+        padding: 4rem 2rem;
+    }
+
+    .icons-home:nth-child(odd) a {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .icons-home:nth-child(odd) span {
+        margin-bottom: 2rem;
+    }
+
+    @media screen and (max-width: 767px) {
+        .three-big-blocks {
+            flex-direction: column;
+        }
+    }
+}
+
+/* Production branding bar (scoped to #branding, ported from OBSOLETE Rails) */
+#branding .header {
+  background-color: #594036;
+  border: none;
+  border-bottom: none;
+  height: 5rem;
+  padding: 0;
+}
+#branding { margin: 0; padding: 0; border: 0; position: relative; z-index: 1000; }
+#branding .hgroup { margin: 0; padding: 0; }
+#branding .container { margin: 0 !important; padding: 0 !important; width: 100%; }
+#branding .header,
+#branding .hgroup,
+#branding .hgroup .container,
+#branding .hgroup .container .row { overflow: visible; }
+#branding .header .site-logo {
+  padding-top: .5rem;
+  text-align: left;
+}
+#branding .header img {
+  max-width: 110px;
+}
+#branding .hgroup .container {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+}
+#branding .hgroup .container .row {
+  display: flex;
+  align-items: center;
+  height: 5rem;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+}
+#branding div.row { /* override Bootstrap row margins so crest sits near viewport left */
+  margin: 0;
+}
+#branding a.manage-profile-link {
+  margin-left: 0;
+  margin-top: .33em;
+  color: white;
+  opacity: .67;
+  position: static;   /* reset any global absolute positioning */
+  right: auto;
+  top: auto;
+}
+#branding a.manage-profile-link:hover {
+  color: white;
+  opacity: .5;
+}
+#branding a.manage-profile-link:visited {
+  color: white;
+  opacity: .67;
+}
+
+/* Hidden quick links for test parity without affecting UI */
+.hidden-quick-links {
+    display: none;
+}
