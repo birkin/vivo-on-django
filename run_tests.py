@@ -1,31 +1,40 @@
 """
-Runs tests for this webap.
+Runs Django tests for vivo-on-django.
 
 Usage examples:
     (all) uv run ./run_tests.py
-    (file) uv run ./run_tests.py tests.test
-    (class) uv run ./run_tests.py tests.test.TestMain
-    (method) uv run ./run_tests.py tests.test.TestMain.test_sum_two_numbers_returns_total
+    (app) uv run ./run_tests.py vivo_app
+    (module) uv run ./run_tests.py vivo_app.tests.test_home
+    (class) uv run ./run_tests.py vivo_app.tests.test_home.HomePageTests
+    (method) uv run ./run_tests.py vivo_app.tests.test_home.HomePageTests.test_homepage_renders_ok
 
-    Also takes a -v or --verbose flag to increase verbosity to level 2, which yields:
-    name of test being run
-    the test's docstring ("Checks...) ... ...and the result (ok)
-    etc...
+Also takes a -v or --verbose flag to show each test's name, docstring, and result.
 
+Uses config.settings unless DJANGO_SETTINGS_MODULE is already set. Django creates
+and destroys a test database when needed.
 """
 
 import argparse
+import os
 import sys
-import unittest
+
+import django
+from django.conf import settings
+from django.test.utils import get_runner
 
 
-def main() -> None:
-    parser = argparse.ArgumentParser()
+def build_parser() -> argparse.ArgumentParser:
+    """
+    Builds the command-line parser for the test runner.
+
+    Called by: main()
+    """
+    parser = argparse.ArgumentParser(description='Run Django tests for vivo-on-django.')
     parser.add_argument(
-        'test_path',
+        'test_label',
         nargs='?',
-        default='tests',
-        help='Optional test module/class/method, or a directory to discover tests from.',
+        default='.',
+        help='Optional Django app, module, class, method, or discovery directory; defaults to all tests.',
     )
     parser.add_argument(
         '-v',
@@ -33,20 +42,48 @@ def main() -> None:
         action='store_true',
         help='Increase verbosity to level 2.',
     )
-    args = parser.parse_args()
+    return parser
 
-    if args.test_path.endswith('.py'):
-        args.test_path = args.test_path[:-3]
 
-    if args.test_path in {'tests', 'test', '.'}:
-        suite = unittest.defaultTestLoader.discover('tests')
-    else:
-        suite = unittest.defaultTestLoader.loadTestsFromName(args.test_path)
+def normalize_test_label(test_label: str) -> str:
+    """
+    Normalizes a dotted test label and aliases for all tests.
 
-    verbosity = 2 if args.verbose else 1
-    runner = unittest.TextTestRunner(verbosity=verbosity)
-    result = runner.run(suite)
-    sys.exit(0 if result.wasSuccessful() else 1)
+    Called by: run_tests()
+    """
+    normalized_label: str = test_label[:-3] if test_label.endswith('.py') else test_label
+    if normalized_label in {'tests', 'test', '.'}:
+        normalized_label = '.'
+    return normalized_label
+
+
+def run_tests(test_label: str, verbose: bool) -> int:
+    """
+    Initializes Django and runs the selected tests without interactive prompts.
+
+    Called by: main()
+    """
+    settings_module: str = os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings')
+    test_labels: list[str] = [normalize_test_label(test_label)]
+    verbosity: int = 2 if verbose else 1
+    print(f'using settings-module, ``{settings_module}``', flush=True)
+    django.setup()
+    test_runner_class = get_runner(settings)
+    test_runner = test_runner_class(verbosity=verbosity, interactive=False)
+    failures: int = test_runner.run_tests(test_labels)
+    return failures
+
+
+def main() -> None:
+    """
+    Parses arguments and exits with a failure status when any test fails.
+
+    Called by: __main__
+    """
+    parser: argparse.ArgumentParser = build_parser()
+    args: argparse.Namespace = parser.parse_args()
+    failures: int = run_tests(args.test_label, args.verbose)
+    sys.exit(1 if failures else 0)
 
 
 if __name__ == '__main__':

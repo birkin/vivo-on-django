@@ -41,10 +41,10 @@ If other instruction files exist (Copilot, IDE rules, contributor docs) and conf
 - Use `uv` to run Python code; do not invoke `python` or `python3` directly.
 - Install the locked dependencies with `uv sync --locked`; use the repository's `.venv` interpreter.
 - Run a script via: `uv run ./path_to_script.py --help`
-- Run the Django app tests via: `uv run ./manage.py test vivo_app -v 2`.
-- Run all discovered tests via: `uv run ./manage.py test -v 2`. Read the networking notes under [Tests](#tests) first.
-- Run one Django test module, class, or method by passing its dotted name to `manage.py test`, for example: `uv run ./manage.py test vivo_app.tests.test_home -v 2`.
-- `run_tests.py` is copied unchanged from the script template. It uses plain `unittest`, defaults to a root-level `tests/` directory that this repository does not have, and does not initialize Django or create a test database. Use `manage.py test` for this application's suite.
+- Run tests via: `uv run ./run_tests.py`. This discovers all tests.
+- Run the local Django app tests via: `uv run ./run_tests.py vivo_app -v`.
+- Pass a dotted module, class, or method name for a smaller selection, for example: `uv run ./run_tests.py vivo_app.tests.test_home -v`. The runner's docstring includes examples; `-v` or `--verbose` shows each test's name, docstring, and result.
+- `run_tests.py` initializes Django and uses its configured test runner, including test database setup and cleanup. It uses `config.settings` unless `DJANGO_SETTINGS_MODULE` is already set, runs without interactive prompts, and exits with a nonzero status when tests fail.
 - Run Django management commands via: `uv run ./manage.py THE-COMMAND`.
 - For a standalone helper needing a missing package, use `uv run --no-project --with PACKAGE python SCRIPT ARGS`. Do not add temporary helper dependencies to `pyproject.toml` or install them globally.
 
@@ -147,7 +147,6 @@ If other instruction files exist (Copilot, IDE rules, contributor docs) and conf
 
 - Use Django's test framework for application tests and standard library `unittest` for independent helpers; do not introduce pytest.
 - `vivo_app/tests/` checks routes, home and static pages, display pages, and publications using local or sample data. Django's runner creates and destroys its test database.
-- Root-level `test_search.py` can attempt real HTTP requests despite its comments. Mock those calls for offline testing; do not assume the full discovered suite avoids the network.
 - `test_vivo_api.py` skips its tests unless `VIVO_API_ONLINE=1`. Setting that flag enables calls to the configured VIVO service. Keep it unset for ordinary local checks.
 - New behavior should usually come with a focused test covering:
   - the happy path
@@ -160,7 +159,7 @@ When implementing a change (especially from an issue/task):
 
 1. Read relevant surrounding code and match existing conventions.
 2. Make the smallest correct change that satisfies the request.
-3. Update tests when behavior changes and run the relevant Django tests; ordinarily use `uv run ./manage.py test vivo_app -v 2`.
+3. Update tests when behavior changes and run `uv run ./run_tests.py`. For local page changes, use `uv run ./run_tests.py vivo_app -v`.
 4. Check changed Python files with Pylance or Pyright. If a check cannot run, report what prevented it and the concrete command or setup needed.
 
 ### Issue-based work and review
@@ -251,6 +250,7 @@ When implementing a change (especially from an issue/task):
 | Location | What to inspect there |
 | --- | --- |
 | `pyproject.toml`, `uv.lock`, `ruff.toml` | Runtime requirements, dependencies, older inline coding guidance, and formatting settings. |
+| `run_tests.py` | Django test command, with full discovery, app/module/class/method selection, and optional verbose output. |
 | `config/settings.py` | Environment loading, database, cache, logging, templates, and VIVO configuration. |
 | `config/urls.py` | All application routes, framework authentication routes, and error handlers; there is no app-level `urls.py`. |
 | `vivo_app/views.py` | Public page handlers and older placeholder endpoints for search, visualization, exports, and editing. |
@@ -261,7 +261,7 @@ When implementing a change (especially from an issue/task):
 | `vivo_app/templates/`, `vivo_app/static/` | Page templates, shared includes, CSS, JavaScript, and images; follow the template actually selected by each view. |
 | `vivo_app/context_processors.py` | Shared template values from settings. |
 | `vivo_app/views_auth.py`, `vivo_app/forms.py`, `vivo_app/models.py`, `vivo_app/migrations/` | Existing authentication and profile code. Its presence does not expand conversion scope. |
-| `vivo_app/tests/`, root-level `test_*.py` | Django page tests and older API/search/visualization checks, with the different networking behavior described above. |
+| `vivo_app/tests/`, `test_visualization.py`, `test_vivo_api.py` | Django page tests, sample visualization checks, and opt-in VIVO API tests. |
 
 ### Local configuration and current limitations
 
