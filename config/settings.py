@@ -29,14 +29,6 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', 'django-insecure-dev-key-change-me-in-production')
 
-# VIVO API Configuration
-VIVO_SPARQL_ENDPOINT = os.getenv('VIVO_SPARQL_ENDPOINT', 'http://localhost:8080/vivo/api/sparqlQuery')
-VIVO_UPDATE_ENDPOINT = os.getenv('VIVO_UPDATE_ENDPOINT', 'http://localhost:8080/vivo/api/sparqlUpdate')
-VIVO_USERNAME = os.getenv('VIVO_USERNAME', 'vivo_root@mydomain.edu')
-VIVO_PASSWORD = os.getenv('VIVO_PASSWORD', 'password')
-VIVO_CACHE_TIMEOUT = int(os.getenv('VIVO_CACHE_TIMEOUT', 3600))  # 1 hour default
-VIVO_REQUEST_TIMEOUT = int(os.getenv('VIVO_REQUEST_TIMEOUT', 30))  # seconds
-
 # Site configuration pulled from environment to mirror legacy Rails behavior
 GOOGLE_ANALYTICS_KEY = os.getenv('GOOGLE_ANALYTICS_KEY', '')
 MANAGER_URL = os.getenv('MANAGER_URL', 'https://vivo.brown.edu/manager')

@@ -1,16 +1,11 @@
 """
-Visualization components for VIVO data.
+Provides sample co-authorship networks, organization charts, and publication timelines.
 
-This module provides functions and classes for generating visualizations
-from VIVO data, including co-authorship networks, organization charts,
-and publication timelines.
+The visualizers return local sample data and do not contact external services.
 """
 
 from typing import Any
 import logging
-
-# Import VIVO API client
-from .vivo_api import vivo_client
 
 logger = logging.getLogger(__name__)
 
@@ -20,10 +15,6 @@ class VisualizationError(Exception):
 
 class NetworkVisualizer:
     """Handles network visualizations (co-authorship, collaboration, etc.)."""
-    
-    def __init__(self, client=None):
-        """Initialize with an optional VIVO API client."""
-        self.client = client or vivo_client
     
     async def coauthorship_network(self, person_uri: str, depth: int = 1) -> dict[str, Any]:
         """
@@ -36,8 +27,7 @@ class NetworkVisualizer:
         Returns:
             Dictionary containing nodes and links for the network visualization
         """
-        # This would be implemented with SPARQL queries to VIVO
-        # For now, returning a mock response
+        ## Returns sample data for the prototype.
         return {
             'nodes': [
                 {'id': person_uri, 'label': 'Researcher', 'type': 'person'},
@@ -53,10 +43,6 @@ class NetworkVisualizer:
 class TimelineVisualizer:
     """Handles timeline visualizations for publications and other events."""
     
-    def __init__(self, client=None):
-        """Initialize with an optional VIVO API client."""
-        self.client = client or vivo_client
-    
     async def publication_timeline(self, person_uri: str) -> dict[str, Any]:
         """
         Generate a timeline of publications for a person.
@@ -67,8 +53,7 @@ class TimelineVisualizer:
         Returns:
             Dictionary containing timeline data for visualization
         """
-        # This would be implemented with SPARQL queries to VIVO
-        # For now, returning a mock response
+        ## Returns sample data for the prototype.
         return {
             'events': [
                 {
@@ -90,10 +75,6 @@ class TimelineVisualizer:
 class OrganizationVisualizer:
     """Handles organization charts and hierarchies."""
     
-    def __init__(self, client=None):
-        """Initialize with an optional VIVO API client."""
-        self.client = client or vivo_client
-    
     async def organization_chart(self, org_uri: str) -> dict[str, Any]:
         """
         Generate an organization chart.
@@ -104,8 +85,7 @@ class OrganizationVisualizer:
         Returns:
             Dictionary containing the organization hierarchy
         """
-        # This would be implemented with SPARQL queries to VIVO
-        # For now, returning a mock response
+        ## Returns sample data for the prototype.
         return {
             'name': 'Sample Department',
             'type': 'AcademicDepartment',

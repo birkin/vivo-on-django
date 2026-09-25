@@ -2,7 +2,9 @@
 
 ## Brief overview
 
-This project is building a Django replacement for the public Researchers@Brown Rails front end. Its goal is to preserve the site's existing URLs, used functionality, and appearance so visitors can follow the same links and use the site in the same way.
+This project builds a Django replacement for the public Researchers@Brown Rails front end. Its goal is to preserve the site's existing URLs, used functionality, and appearance so visitors can follow the same links and use the site in the same way.
+
+This readme will be updated as the project progresses, until it becomes simply an operational readme for the Django webapp.
 
 ## More info
 
@@ -17,13 +19,13 @@ This project is building a Django replacement for the public Researchers@Brown R
 
 The work preserves links to separate services where the public site uses them. It excludes rebuilding the separate Manager application, unused Manager features in the Rails source, the VIVO back end, and related data-management systems. Redesigns and new features are also outside the conversion's scope.
 
-**Access to Solr is required for the intended application.** Solr supplies the search index used by the existing site. Providing, configuring, populating, and operating that service are currently outside this webapp's scope. The conversion must use the existing supporting services, including Solr and VIVO.
+**Access to Solr is required for the intended application.** Solr supplies the search index used by the existing site. Providing, configuring, populating, and operating that service are currently outside this webapp's scope. The conversion must use the existing Solr service.
 
-The Django implementation is still a prototype. Several pages use sample data, and search, visualization, and other routes include placeholders. The code includes a VIVO query client, but it does not yet provide Solr connection settings or a Solr client. Starting the local app therefore does not establish that real search or the full conversion works. Completion requires functional and visual comparisons against the public Rails site, accounting for changing data and random homepage imagery.
+The Django implementation is still a prototype. Several pages use sample data, and search, visualization, and other routes include placeholders. The code does not yet provide Solr connection settings or a Solr client. Starting the local app therefore does not establish that real search or the full conversion works. Completion requires functional and visual comparisons against the public Rails site, accounting for changing data and random homepage imagery.
 
 ## Local installation
 
-Install Git and uv, and ensure you can access this repository. uv manages the interpreter required by [pyproject.toml](pyproject.toml). The steps below prepare the current prototype with a local SQLite database; work with real research data also requires separately arranged access to Solr and VIVO. This repository does not set up those services.
+Install Git and uv, and ensure you can access this repository. uv manages the interpreter required by [pyproject.toml](pyproject.toml). The steps below prepare the current prototype with a local SQLite database; work with real research data also requires separately arranged access to Solr. This repository does not set up that service.
 
 1. Start in the parent directory where you want to keep the checkout and its local support files:
 
@@ -75,8 +77,6 @@ Open <http://127.0.0.1:8000/> to view the homepage. Informational pages include 
 
 The local settings write application logs to `../logs/django.log` and use `../cache_dir` for cached responses. Some unfinished routes return placeholder text. Search is not yet connected to Solr, so a successful page response does not demonstrate a working search against real records.
 
-For work that uses the VIVO client, obtain service access separately and set `VIVO_SPARQL_ENDPOINT`, `VIVO_UPDATE_ENDPOINT`, `VIVO_USERNAME`, and `VIVO_PASSWORD` in `../.env`. These configure the client's query and update services; SPARQL is the query language used by VIVO. `VIVO_REQUEST_TIMEOUT` controls the request timeout in seconds, and `VIVO_CACHE_TIMEOUT` controls how long query results are cached in seconds. These settings do not configure Solr or replace the remaining work to connect it to this webapp.
-
 ## Tests
 
 From the checkout, after local installation, run all discovered tests:
@@ -91,15 +91,7 @@ To run only the Django app tests with each test's name, description, and result:
 uv run ./run_tests.py vivo_app -v
 ```
 
-The runner uses Django's test framework and creates and removes a test database when needed. Ordinary tests use local or sample data. Keep `VIVO_API_ONLINE` unset to skip tests that contact VIVO.
-
-After configuring VIVO access, explicitly enable its query and cache checks with:
-
-```bash
-VIVO_API_ONLINE=1 uv run ./run_tests.py test_vivo_api -v
-```
-
-These checks send queries to the configured VIVO service and write local cache entries; they do not update VIVO records or test Solr. Passing the prototype tests does not establish that the Django site reproduces the public Rails site's behavior and appearance.
+The runner uses Django's test framework and creates and removes a test database when needed. Tests use local or sample data and do not contact external data services. Passing the prototype tests does not establish that the Django site reproduces the public Rails site's behavior and appearance or that Solr works.
 
 ## Primary dependencies
 
@@ -110,21 +102,20 @@ This inventory compares declarations in [pyproject.toml](pyproject.toml), use in
 | Package | Purpose and evidence |
 | --- | --- |
 | `Django` | Serves pages, handles URLs, renders templates, and provides database and authentication support. Used throughout [config/](config/) and [vivo_app/](vivo_app/). |
-| `httpx` | Sends asynchronous HTTP requests to VIVO query and update endpoints in [vivo_app/lib/vivo_api.py](vivo_app/lib/vivo_api.py). Also used by [check_vivo_connection.py](check_vivo_connection.py). |
 | `python-dotenv` | Loads local environment configuration through `load_dotenv()` in [config/settings.py](config/settings.py). |
 
-The lockfile also records packages these depend on: Django requires `asgiref` and `sqlparse`, while HTTPX requires `anyio`, `certifi`, `httpcore`, and `idna`. These support the directly used packages; their presence in the lockfile does not imply separate application use.
+The lockfile also records packages these depend on, including Django's `asgiref` and `sqlparse` requirements. These support the directly used packages; their presence in the lockfile does not imply separate application use.
 
 ### Development tools and environment requirements
 
 - `django-browser-reload` is declared with the application packages but serves local development. [config/settings.py](config/settings.py) and [config/urls.py](config/urls.py) enable it only when both `DJANGO_DEBUG=True` and `DJANGO_BROWSER_RELOAD=true`.
 - Tests use Django's test framework and the standard library's `unittest`; no separate test package is declared. uv manages dependencies and runs commands. [ruff.toml](ruff.toml) contains formatter and linter settings, but Ruff is not declared as a dependency.
 - `mysqlclient` is declared in the `staging` and `prod` groups. The checked-in database configuration uses SQLite, so the local setup does not need it. Confirm the intended MySQL configuration before changing those groups.
-- Solr and VIVO are external services, separate from the Python dependency list. Access to Solr is required for the intended application; supplying and maintaining it remain outside this webapp's current scope.
+- Solr is an external service, separate from the Python dependency list. Access to Solr is required for the intended application; supplying and maintaining it remain outside this webapp's current scope.
 
 ### Declarations and older code to review
 
-- `trio` is declared directly, but no direct use was found in the current Python code. The existing asynchronous test helpers use `asyncio`. Confirm whether another supported execution path needs Trio before removing it or its supporting packages.
+- `trio` is declared directly, but no direct use was found in the current Python code. The visualization tests use `unittest.IsolatedAsyncioTestCase`. Confirm whether another supported execution path needs Trio before removing it or its supporting packages.
 - Older account templates, including [profile.html](vivo_app/templates/registration/profile.html) and [change_password.html](vivo_app/templates/registration/change_password.html), load `crispy_forms_tags`. The corresponding package is neither declared nor enabled in Django settings. Confirm whether these pages belong in the agreed public-site scope before deciding how to maintain them.
 
-After sustained confirmation that the required functionality works, review uncertain declarations and development-only packages, retain needed runtime support and environment groups, and prefer `package~=1.2.0` constraints with patch zero where appropriate. Keep exact resolved versions in `uv.lock` and validate each affected dependency group when making those changes. This inventory leaves the current dependency declarations unchanged.
+After sustained confirmation that the required functionality works, review uncertain declarations and development-only packages, retain needed runtime support and environment groups, and prefer `package~=1.2.0` constraints with patch zero where appropriate. Keep exact resolved versions in `uv.lock` and validate each affected dependency group when making those changes.

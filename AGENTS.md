@@ -147,7 +147,6 @@ If other instruction files exist (Copilot, IDE rules, contributor docs) and conf
 
 - Use Django's test framework for application tests and standard library `unittest` for independent helpers; do not introduce pytest.
 - `vivo_app/tests/` checks routes, home and static pages, display pages, and publications using local or sample data. Django's runner creates and destroys its test database.
-- `test_vivo_api.py` skips its tests unless `VIVO_API_ONLINE=1`. Setting that flag enables calls to the configured VIVO service. Keep it unset for ordinary local checks.
 - New behavior should usually come with a focused test covering:
   - the happy path
   - at least one failure / edge case
@@ -251,17 +250,16 @@ When implementing a change (especially from an issue/task):
 | --- | --- |
 | `pyproject.toml`, `uv.lock`, `ruff.toml` | Runtime requirements, dependencies, older inline coding guidance, and formatting settings. |
 | `run_tests.py` | Django test command, with full discovery, app/module/class/method selection, and optional verbose output. |
-| `config/settings.py` | Environment loading, database, cache, logging, templates, and VIVO configuration. |
+| `config/settings.py` | Environment loading, database, cache, logging, templates, and public-site configuration. |
 | `config/urls.py` | All application routes, framework authentication routes, and error handlers; there is no app-level `urls.py`. |
 | `vivo_app/views.py` | Public page handlers and older placeholder endpoints for search, visualization, exports, and editing. |
 | `vivo_app/lib/display.py` | Sample display and publication data; entity types currently come from ID-prefix guesses. |
 | `vivo_app/lib/home.py`, `vivo_app/lib/assets.py` | Sample book-cover pages and random homepage background selection. |
-| `vivo_app/lib/vivo_api.py` | Asynchronous `httpx` SPARQL query/update client and Django cache use. |
-| `vivo_app/lib/search.py`, `vivo_app/lib/visualization.py` | Search helpers that can call VIVO, and visualization helpers that currently return sample data. |
+| `vivo_app/lib/visualization.py` | Visualization helpers that return local sample data. |
 | `vivo_app/templates/`, `vivo_app/static/` | Page templates, shared includes, CSS, JavaScript, and images; follow the template actually selected by each view. |
 | `vivo_app/context_processors.py` | Shared template values from settings. |
 | `vivo_app/views_auth.py`, `vivo_app/forms.py`, `vivo_app/models.py`, `vivo_app/migrations/` | Existing authentication and profile code. Its presence does not expand conversion scope. |
-| `vivo_app/tests/`, `test_visualization.py`, `test_vivo_api.py` | Django page tests, sample visualization checks, and opt-in VIVO API tests. |
+| `vivo_app/tests/`, `test_visualization.py` | Django page tests and sample visualization checks. |
 
 ### Local configuration and current limitations
 

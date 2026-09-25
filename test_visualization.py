@@ -1,27 +1,12 @@
 #!/usr/bin/env python
 """
-Test script for VIVO visualization components.
+Checks visualization components using local sample data.
 
 Usage:
-    python test_visualization.py
+    uv run -m unittest test_visualization -v
 """
 import logging
-import os
-import sys
 import unittest
-from pathlib import Path
-
-# Add project root to Python path
-project_root = str(Path(__file__).resolve().parent)
-if project_root not in sys.path:
-    sys.path.insert(0, project_root)
-
-# Set up Django environment before importing Django models
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings')
-import django
-django.setup()
-
-# Now import the visualization components after Django setup
 from vivo_app.lib.visualization import (
     NetworkVisualizer, TimelineVisualizer, OrganizationVisualizer,
     export_network_to_cytoscape, export_timeline_to_vis
@@ -32,29 +17,30 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(level
 logger = logging.getLogger(__name__)
 
 
-class TestVisualization(unittest.TestCase):
-    """Test cases for VIVO visualization components."""
+class TestVisualization(unittest.IsolatedAsyncioTestCase):
+    """Checks sample visualization components without Django configuration."""
     
-    def setUp(self):
-        """Set up test environment."""
+    def setUp(self) -> None:
+        """
+        Creates the sample visualizers for each test.
+
+        Called by: unittest.TestCase.run()
+        """
         self.network_viz = NetworkVisualizer()
         self.timeline_viz = TimelineVisualizer()
         self.org_viz = OrganizationVisualizer()
     
-    def run_async(self, coro):
-        """Helper to run async tests synchronously."""
-        import asyncio
-        return asyncio.get_event_loop().run_until_complete(coro)
-    
-    def test_network_visualizer(self):
-        """Test network visualization functionality."""
+    async def test_network_visualizer(self) -> None:
+        """
+        Checks sample network data and its Cytoscape export.
+        """
         logger.info("Testing network visualization...")
         
         # Test with a mock person URI
         person_uri = "http://vivo.example.edu/individual/n1234"
         
         # This will use the mock implementation
-        network = self.run_async(self.network_viz.coauthorship_network(person_uri))
+        network = await self.network_viz.coauthorship_network(person_uri)
         
         # Check basic structure
         self.assertIn('nodes', network)
@@ -69,15 +55,17 @@ class TestVisualization(unittest.TestCase):
         
         logger.info("Network visualization test completed")
     
-    def test_timeline_visualizer(self):
-        """Test timeline visualization functionality."""
+    async def test_timeline_visualizer(self) -> None:
+        """
+        Checks sample publication data and its timeline export.
+        """
         logger.info("Testing timeline visualization...")
         
         # Test with a mock person URI
         person_uri = "http://vivo.example.edu/individual/n1234"
         
         # This will use the mock implementation
-        timeline = self.run_async(self.timeline_viz.publication_timeline(person_uri))
+        timeline = await self.timeline_viz.publication_timeline(person_uri)
         
         # Check basic structure
         self.assertIn('events', timeline)
@@ -90,15 +78,17 @@ class TestVisualization(unittest.TestCase):
         
         logger.info("Timeline visualization test completed")
     
-    def test_organization_visualizer(self):
-        """Test organization visualization functionality."""
+    async def test_organization_visualizer(self) -> None:
+        """
+        Checks the sample organization hierarchy.
+        """
         logger.info("Testing organization visualization...")
         
         # Test with a mock organization URI
         org_uri = "http://vivo.example.edu/individual/org123"
         
         # This will use the mock implementation
-        org_chart = self.run_async(self.org_viz.organization_chart(org_uri))
+        org_chart = await self.org_viz.organization_chart(org_uri)
         
         # Check basic structure
         self.assertIn('name', org_chart)

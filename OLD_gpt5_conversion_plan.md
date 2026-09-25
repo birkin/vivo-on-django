@@ -27,7 +27,7 @@ Date: 2025-09-25 23:27 EDT
 - View helpers: `vivo_app/views.py` provides thin view functions and a `render_or_stub()` utility that returns a plain-text stub on template errors or when templates are missing; honors `?format=json`.
 - Templates: `vivo_app/templates/` contains `base.html`, `home/index.html`, `display/` and `vivo/` directories, plus error templates `404.html` and `500.html`.
 - Static: `vivo_app/static/css/style.css`, `vivo_app/static/js/tabs.js` exist; additional assets can be added as needed for parity.
-- Settings: `config/settings.py` sets static dirs, file-based cache, logging, and environment-driven VIVO endpoints. Development default is safe for offline work.
+- Settings: `config/settings.py` sets static dirs, file-based cache, logging, and environment-driven site options.
 
 Known quick issue to fix during home-page parity:
 - In `vivo_app/templates/home/index.html`, `{% url 'home_publications' %}` does not match the route name defined in `config/urls.py` (`name='publications'`). This currently causes a template reverse error and triggers `render_or_stub()` fallback. Update the template to `{% url 'publications' %}` during the home-page work.
@@ -87,7 +87,7 @@ Deliverables for this step:
 - Local endpoint: `/search/` → `vivo_app.views.search` → `vivo_app/templates/search/results.html`
 - Plan (to be executed after home is done):
   - Capture production search page structure (query bar, facets, results list, pagination).
-  - Implement data-prep in `vivo_app/lib/search.py` (deterministic stubs first, then live integrations later as needed).
+  - Add search helpers under `vivo_app/lib/` (deterministic stubs first, then Solr integration later as needed).
   - Match markup/IDs/classes and basic interactions. Keep progressive enhancement (no-JS fallback).
   - Tests for query handling, basic HTML markers, and JSON shape if provided.
 
@@ -115,7 +115,7 @@ Update this section as the project progresses.
   - Run server: `uv run ./manage.py runserver`
   - Tests: `uv run ./manage.py test -v 2` (or `uv run -m unittest discover -v`)
 - External dependencies:
-  - Use `httpx` for HTTP if/when live VIVO/Solr calls are introduced. For now, prefer deterministic stubs for parity.
+  - Use `httpx` for HTTP if/when Solr calls are introduced. For now, prefer deterministic stubs for parity.
 - Settings highlights (`config/settings.py`):
   - Static dirs configured; file-based cache; logs under `logs/django.log`.
   - `DEBUG` controlled via environment; safe defaults in development.
