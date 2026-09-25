@@ -44,6 +44,12 @@ Rails search and profile code uses Solr documents, including nested data in `jso
 
 ## Sequence of work
 
+1. [Confirm the public endpoints and user journeys](#1-confirm-the-public-endpoints-and-user-journeys)
+2. [Establish repeatable data and a runnable local site](#2-establish-repeatable-data-and-a-runnable-local-site)
+3. [Build and prove the comparison tool](#3-build-and-prove-the-comparison-tool)
+4. [Implement complete public journeys](#4-implement-complete-public-journeys)
+5. [Verify the complete scope and obtain acceptance](#5-verify-the-complete-scope-and-obtain-acceptance)
+
 Codex carries out the investigation, tooling, implementation, and checks below within each authorized task. The project owner supplies missing access or data when needed and reviews scope ambiguities and proposed differences. Each phase produces evidence that the next phase can use.
 
 ### 1. Confirm the public endpoints and user journeys
